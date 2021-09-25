@@ -1,13 +1,18 @@
 package com.drmarkdown.doc.models;
 
 import com.drmarkdown.doc.dtos.DocDto;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import java.util.Date;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
+@EqualsAndHashCode
 @Entity(name = "doc")
 public class DocModel extends GenericModel {
     @Column(columnDefinition = "TEXT")
@@ -18,10 +23,6 @@ public class DocModel extends GenericModel {
     private String title;
     @Column
     private Boolean available;
-
-    public DocModel() {
-        super();
-    }
 
     public DocModel(DocDto docDto) {
         this.setContent(docDto.getContent());

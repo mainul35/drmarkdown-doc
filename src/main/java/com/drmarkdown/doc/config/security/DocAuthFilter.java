@@ -2,6 +2,7 @@ package com.drmarkdown.doc.config.security;
 
 import com.drmarkdown.doc.exceptions.InvalidPayloadException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +34,7 @@ public class DocAuthFilter extends AbstractAuthenticationProcessingFilter {
         super(requiresAuthenticationRequestMatcher);
     }
 
+    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         String tokenUnstripped = request.getHeader(AUTHORIZATION);
@@ -48,10 +50,8 @@ public class DocAuthFilter extends AbstractAuthenticationProcessingFilter {
 
             String payload = new String(decodedBytes, StandardCharsets.UTF_8);
             Map<String, String> map = this.mapPayload(payload);
-            if (map == null || map.get("sub") == null) try {
+            if (map == null || map.get("sub") == null) {
                 throw new InvalidPayloadException("Invalid payload");
-            } catch (InvalidPayloadException e) {
-                e.printStackTrace();
             }
             String username = map.get("sub");
             authentication = new UsernamePasswordAuthenticationToken(username, token);

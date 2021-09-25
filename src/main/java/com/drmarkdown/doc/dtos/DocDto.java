@@ -1,20 +1,21 @@
 package com.drmarkdown.doc.dtos;
 
 import com.drmarkdown.doc.models.DocModel;
-import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
+@EqualsAndHashCode
 public class DocDto extends BaseDto<DocModel> {
     private String id;
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String content;
     private String userId;
     private String title;
