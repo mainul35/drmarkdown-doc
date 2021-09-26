@@ -36,7 +36,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private Filter docAuthFilter() throws Exception {
         OrRequestMatcher orRequestMatcher = new OrRequestMatcher(
-                new AntPathRequestMatcher("/doc/**")
+                new AntPathRequestMatcher("/doc/**"),
+                new AntPathRequestMatcher("/test/**")
         );
         DocAuthFilter authFIlter = new DocAuthFilter(orRequestMatcher);
         authFIlter.setAuthenticationManager(authenticationManager());

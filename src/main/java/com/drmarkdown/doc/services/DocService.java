@@ -15,4 +15,6 @@ public interface DocService {
     List<DocDto> fetchDocForUser(String userId, String callerUser);
 
     void createDocument(DocDto docDto);
+
+    void deleteDoc(String userId, String docId);
 }

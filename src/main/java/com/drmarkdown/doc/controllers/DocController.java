@@ -7,6 +7,8 @@ import com.drmarkdown.doc.services.DocService;
 import com.drmarkdown.doc.services.TokenService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,10 +38,10 @@ public class DocController {
     // - fetch own documents
     @GetMapping("/{userId}/all")
     @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN', 'ANONYMOUS')")
-    public List<DocDto> fetchUserDocs(@PathVariable String userId, HttpServletRequest request) throws MissingAuthorizationException {
+    public ResponseEntity<List<DocDto>> fetchUserDocs(@PathVariable String userId, HttpServletRequest request) throws MissingAuthorizationException {
         String jwtToken = getJwtTokenFromHeader(request);
         String callerUser = tokenService.getUserId(jwtToken);
-        return docService.fetchDocForUser(userId, callerUser);
+        return ResponseEntity.ok (docService.fetchDocForUser(userId, callerUser));
     }
 
     // - fetch public documents
@@ -76,4 +78,14 @@ public class DocController {
         return jwtToken;
     }
     // - delete a doc of owner
+
+    @DeleteMapping(value = "/{docId}/delete", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> deleteDoc(@PathVariable String docId, HttpServletRequest request) throws MissingAuthorizationException {
+
+        String jwtToken = getJwtTokenFromHeader(request);
+        String userId = tokenService.getUserId(jwtToken);
+        docService.deleteDoc(userId, docId);
+        return ResponseEntity.ok ("{\"message\": \"Doc Deleted successfully\"}");
+    }
 }

@@ -75,7 +75,7 @@ public class DocServiceImpl implements DocService {
     public List<DocDto> fetchDocForUser(String userId, String callerUserId) {
         List<DocModel> models = docRepository.findAllByUserIdOrderByUpdatedAtDesc(userId);
         return models.stream()
-                .filter(docModel -> docModel.getUserId().equals(callerUserId))
+//                .filter(docModel -> docModel.getUserId().equals(callerUserId))
                 .map(docModel -> {
                     DocDto docDto = new DocDto();
                     docDto.mapEntityToDto(docModel);
@@ -97,5 +97,17 @@ public class DocServiceImpl implements DocService {
         docRepository.save(docModel);
 
         docDto.mapEntityToDto(docModel);
+    }
+
+    @Override
+    public void deleteDoc(String userId, String docId) {
+        var doc = docRepository.findById (docId);
+        doc.ifPresent (docModel -> {
+            if (!docModel.getUserId ().equals (userId)) {
+                throw new RuntimeException ("User does not own this doc");
+            }
+            docRepository.delete (docModel);
+        });
+        doc.orElseThrow (() -> new RuntimeException ("Unable to delete"));
     }
 }
