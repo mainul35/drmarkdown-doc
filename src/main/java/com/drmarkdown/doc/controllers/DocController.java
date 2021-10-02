@@ -36,7 +36,7 @@ public class DocController {
     }
 
     // - fetch own documents
-    @GetMapping("/{userId}/all")
+    @GetMapping("/all/{userId}")
     @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN', 'ANONYMOUS')")
     public ResponseEntity<List<DocDto>> fetchUserDocs(@PathVariable String userId, HttpServletRequest request) throws MissingAuthorizationException {
         String jwtToken = getJwtTokenFromHeader(request);
@@ -45,7 +45,7 @@ public class DocController {
     }
 
     // - fetch public documents
-    @GetMapping("/{docId}")
+    @GetMapping("/fetch/{docId}")
     @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN', 'ANONYMOUS')")
     public DocDto fetchDocument(@PathVariable String docId, HttpServletRequest request) throws MissingAuthorizationException {
         String jwtToken = getJwtTokenFromHeader(request);
@@ -79,7 +79,7 @@ public class DocController {
     }
     // - delete a doc of owner
 
-    @DeleteMapping(value = "/{docId}/delete", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @DeleteMapping(value = "/delete/{docId}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> deleteDoc(@PathVariable String docId, HttpServletRequest request) throws MissingAuthorizationException {
 
