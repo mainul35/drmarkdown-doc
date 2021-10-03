@@ -48,8 +48,9 @@ public class DocServiceImpl implements DocService {
 
     @Override
     public List<DocDto> fetchTopRecentDocs() {
-        final Page<DocModel> docModels = docRepository.findAllByAvailable(true, PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "updatedAt")));
+        final Page<DocModel> docModels = docRepository.findAll(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "updatedAt")));
         return docModels.stream()
+                .filter (DocModel::getAvailable)
                 .map(docModel -> {
                     DocDto docDto = new DocDto();
                     docDto.mapEntityToDto(docModel);

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -31,13 +32,16 @@ public class DocController {
     @PostMapping("/create")
     @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN')")
     public DocDto createDocument(@RequestBody DocDto docDto) {
+        if (docDto.getId () == null) {
+            docDto.setId (UUID.randomUUID ().toString ());
+        }
         docService.createDocument(docDto);
         return docDto;
     }
 
     // - fetch own documents
     @GetMapping("/all/{userId}")
-    @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN', 'ANONYMOUS')")
+    @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<DocDto>> fetchUserDocs(@PathVariable String userId, HttpServletRequest request) throws MissingAuthorizationException {
         String jwtToken = getJwtTokenFromHeader(request);
         String callerUser = tokenService.getUserId(jwtToken);
@@ -46,7 +50,7 @@ public class DocController {
 
     // - fetch public documents
     @GetMapping("/fetch/{docId}")
-    @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN', 'ANONYMOUS')")
+    @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN')")
     public DocDto fetchDocument(@PathVariable String docId, HttpServletRequest request) throws MissingAuthorizationException {
         String jwtToken = getJwtTokenFromHeader(request);
         String callerUser = tokenService.getUserId(jwtToken);
@@ -71,12 +75,6 @@ public class DocController {
         return docDto;
     }
 
-    private String getJwtTokenFromHeader(HttpServletRequest request) throws MissingAuthorizationException {
-        String tokenHeader = request.getHeader(AUTHORIZATION);
-        if (tokenHeader == null) throw new MissingAuthorizationException("Authorization header does not contain a bearer token");
-        String jwtToken = StringUtils.removeStart(tokenHeader, "Bearer ").trim();
-        return jwtToken;
-    }
     // - delete a doc of owner
 
     @DeleteMapping(value = "/delete/{docId}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -87,5 +85,12 @@ public class DocController {
         String userId = tokenService.getUserId(jwtToken);
         docService.deleteDoc(userId, docId);
         return ResponseEntity.ok ("{\"message\": \"Doc Deleted successfully\"}");
+    }
+
+    private String getJwtTokenFromHeader(HttpServletRequest request) throws MissingAuthorizationException {
+        String tokenHeader = request.getHeader(AUTHORIZATION);
+        if (tokenHeader == null) throw new MissingAuthorizationException("Authorization header does not contain a bearer token");
+        String jwtToken = StringUtils.removeStart(tokenHeader, "Bearer ").trim();
+        return jwtToken;
     }
 }
