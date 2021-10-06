@@ -19,7 +19,7 @@ build_phase:
     - mvn install
   artifacts:
     paths:
-      - target/demo-0.0.1-SNAPSHOT.jar
+      - target/doc-0.0.1-SNAPSHOT.jar
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
