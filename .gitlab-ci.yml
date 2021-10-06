@@ -2,7 +2,7 @@ stages:
   - build
   - test
 
-image: java:11
+image: maven:adoptopenjdk
 
 # Build Phase
 # ===========
